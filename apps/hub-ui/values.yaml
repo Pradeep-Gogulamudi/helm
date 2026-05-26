@@ -1,41 +1,355 @@
-replicaCount: 2
+app-template:
+  replicaCount: 2
 
-image:
-  repository: europe-west1-docker.pkg.dev/vdxl-mgmt-01/vdxl-mgmt-01-product-content/hub-ui
-  tag: ""
-  pullPolicy: IfNotPresent
+  image:
+    repository: europe-west1-docker.pkg.dev/vdxl-mgmt-01/vdxl-mgmt-01-product-content/hub-ui
+    tag: ""
+    pullPolicy: IfNotPresent
 
-ports:
-  - containerPort: 80
-
-service:
-  port: 80
-  targetPort: 80
-
-env:
-  - name: TZ
-    value: "Europe/Amsterdam"
-  - name: HUB_API
-    value: "hub-api-service:80"
-
-resources:
-  requests:
-    cpu: 150m
-    memory: 256Mi
-
-readinessProbe:
-  httpGet:
-    path: /
+  container:
+    name: hub-ui
     port: 80
 
-livenessProbe:
-  httpGet:
-    path: /
+  service:
     port: 80
+    type: ClusterIP
 
-autoscaling:
-  enabled: false
+  serviceAccount:
+    name: ai-hub
 
-route:
-  enabled: true
-  path: /
+  resources:
+    requests:
+      cpu: 150m
+      memory: 256Mi
+
+  env:
+    - name: TZ
+      value: "Europe/Amsterdam"
+    - name: HUB_API
+      value: "hub-api-service:80"
+
+    # MongoDB
+    - name: MONGO_DB_URI
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: MONGO_DB_URI
+    - name: MONGO_DB_NAME
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: MONGO_DB_NAME
+
+    # JWT
+    - name: SECURITY_JWT_TOKEN_ISSUER
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: SECURITY_JWT_TOKEN_ISSUER
+    - name: SECURITY_JWT_TOKEN_SIGNING_KEY
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: SECURITY_JWT_TOKEN_SIGNING_KEY
+    - name: SECURITY_JWT_TOKEN_EXPIRATION_HOURS
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: SECURITY_JWT_TOKEN_EXPIRATION_HOURS
+
+    # CORS
+    - name: SECURITY_CORS_ALLOWED_ORIGINS
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: SECURITY_CORS_ALLOWED_ORIGINS
+
+    # Azure Blob Storage
+    - name: AZURE_STORAGE_TRANSLATIONS_CONNECTION_URL
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: AZURE_STORAGE_TRANSLATIONS_CONNECTION_URL
+    - name: AZURE_STORAGE_TRANSLATIONS_CONTAINER_NAME
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: AZURE_STORAGE_TRANSLATIONS_CONTAINER_NAME
+    - name: AZURE_STORAGE_TRANSLATIONS_URL_EXPIRATION_DAYS
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: AZURE_STORAGE_TRANSLATIONS_URL_EXPIRATION_DAYS
+
+    # Kafka
+    - name: KAFKA_HOST
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: KAFKA_HOST
+    - name: KAFKA_PORT
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: KAFKA_PORT
+    - name: KAFKA_GROUP
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: KAFKA_GROUP
+    - name: KAFKA_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: KAFKA_USERNAME
+    - name: KAFKA_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: KAFKA_PASSWORD
+    - name: KAFKA_REDELIVERY_MAX
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: KAFKA_REDELIVERY_MAX
+    - name: KAFKA_REDELIVERY_DELAY
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: KAFKA_REDELIVERY_DELAY
+
+    # Salsify
+    - name: SALSIFY_CLIENT_LOGGING
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: SALSIFY_CLIENT_LOGGING
+    - name: SALSIFY_API_TOKENS
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: SALSIFY_API_TOKENS
+    - name: SALSIFY_API_LOGGING_ENABLED
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: SALSIFY_API_LOGGING_ENABLED
+    - name: SALSIFY_SANDBOX_API_ORG_ID
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: SALSIFY_SANDBOX_API_ORG_ID
+    - name: SALSIFY_API_ORG_ID
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: SALSIFY_API_ORG_ID
+
+    # OpenAI
+    - name: OPEN_AI_API_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: OPEN_AI_API_TOKEN
+
+    # FluxAI
+    - name: FLUX_AI_API_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: FLUX_AI_API_TOKEN
+
+    # Cloudinary
+    - name: CLOUDINARY_CLOUD_NAME
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: CLOUDINARY_CLOUD_NAME
+    - name: CLOUDINARY_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: CLOUDINARY_API_KEY
+    - name: CLOUDINARY_API_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: CLOUDINARY_API_SECRET
+    - name: CLOUDINARY_ENV
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: CLOUDINARY_ENV
+
+    # Cloudflare
+    - name: CLOUDFLARE_API_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: CLOUDFLARE_API_TOKEN
+    - name: CLOUDFLARE_ZONE_ID
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: CLOUDFLARE_ZONE_ID
+
+    # Gemini / Vertex AI
+    - name: GEMINI_VERTAX_AI_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: GEMINI_VERTAX_AI_TOKEN
+
+    # Google Cloud
+    - name: GOOGLE_CLOUD_PROJECT
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: GOOGLE_CLOUD_PROJECT
+    - name: GOOGLE_CLOUD_LOCATION
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: GOOGLE_CLOUD_LOCATION
+    - name: GOOGLE_GENAI_USE_VERTEXAI
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: GOOGLE_GENAI_USE_VERTEXAI
+    - name: GOOGLE_AI_VERTEX_API_LOGGING_ENABLED
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: GOOGLE_AI_VERTEX_API_LOGGING_ENABLED
+    - name: GOOGLE_AI_VERTEX_API_ACCOUNT_KEY
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: GOOGLE_AI_VERTEX_API_ACCOUNT_KEY
+
+    # Azure AD
+    - name: AZURE_TENANT_ID
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: AZURE_TENANT_ID
+    - name: AZURE_CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: AZURE_CLIENT_ID
+    - name: AZURE_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: AZURE_CLIENT_SECRET
+    - name: VITE_AZURE_CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: VITE_AZURE_CLIENT_ID
+    - name: VITE_AZURE_TENANT_ID
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: VITE_AZURE_TENANT_ID
+    - name: VITE_AZURE_SCOPES
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: VITE_AZURE_SCOPES
+
+    # Redis
+    - name: REDIS_HOST
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: REDIS_HOST
+    - name: REDIS_PORT
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: REDIS_PORT
+    - name: REDIS_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: REDIS_PASSWORD
+
+    # Google AI Project (test)
+    - name: GOOGLE_AI_PROJECT_TEST_NAME
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: GOOGLE_AI_PROJECT_TEST_NAME
+    - name: GOOGLE_AI_PROJECT_TEST_LOCATION
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: GOOGLE_AI_PROJECT_TEST_LOCATION
+    - name: GOOGLE_AI_PROJECT_TEST_ID
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: GOOGLE_AI_PROJECT_TEST_ID
+    - name: GOOGLE_AI_PROJECT_TEST_JSON_KEY
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: GOOGLE_AI_PROJECT_TEST_JSON_KEY
+
+    # GCS Storage
+    - name: GCS_STORAGE_BUCKET_NAME
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: GCS_STORAGE_BUCKET_NAME
+
+    # Google AI Project
+    - name: GOOGLE_AI_PROJECT_NAME
+      valueFrom:
+        secretKeyRef:
+          name: hub-ui
+          key: GOOGLE_AI_PROJECT_NAME
+
+  probes:
+    readiness:
+      enabled: true
+      httpGet:
+        path: /
+        port: 80
+      initialDelaySeconds: 3
+      periodSeconds: 3
+      timeoutSeconds: 2
+      failureThreshold: 3
+    liveness:
+      enabled: true
+      httpGet:
+        path: /
+        port: 80
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 2
+      failureThreshold: 3
+
+  autoscaling:
+    enabled: false
+
+  # gateway.gatewayName + hostnames set per env
+  gateway:
+    enabled: true
+    gatewayNamespace: ingress-gateway
+    routes:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /
+        backendRefs:
+          - name: hub-ui
+            port: 80
+
+  externalSecret:
+    enabled: false
+    storeName: ""
+    refreshInterval: "5m"
+    data: []

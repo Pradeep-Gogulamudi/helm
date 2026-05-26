@@ -1,25 +1,40 @@
-{{- if .Values.route.enabled }}
+{{- if .Values.gateway.enabled }}
+{{- $gatewayName := required "gateway.gatewayName is required when gateway.enabled=true" .Values.gateway.gatewayName }}
+{{- $gatewayNamespace := required "gateway.gatewayNamespace is required when gateway.enabled=true" .Values.gateway.gatewayNamespace }}
+{{- $routes := required "gateway.routes must include at least one route when gateway.enabled=true" .Values.gateway.routes }}
+---
+# HTTPRoute for an existing shared Gateway
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
-
 metadata:
-  name: {{ include "app.fullname" . }}
-
+  name: {{ include "base-service.fullname" . }}-route
+  namespace: {{ default .Values.gateway.gatewayNamespace .Values.gateway.routeNamespace }}
+  labels:
+    {{- include "base-service.labels" . | nindent 4 }}
 spec:
   parentRefs:
-    - name: {{ .Values.route.gatewayName }}
-      namespace: {{ .Values.route.gatewayNamespace }}
-
+    - name: {{ $gatewayName }}
+      namespace: {{ $gatewayNamespace }}
+      {{- if .Values.gateway.parentSectionName }}
+      sectionName: {{ .Values.gateway.parentSectionName }}
+      {{- end }}
+  {{- if .Values.gateway.hostnames }}
   hostnames:
-    - "{{ .Values.route.host }}"
-
+    {{- toYaml .Values.gateway.hostnames | nindent 4 }}
+  {{- end }}
   rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: {{ .Values.route.path }}
-
+    {{- range $routes }}
+    - {{- if .matches }}
+      matches:
+        {{- toYaml .matches | nindent 8 }}
+      {{- end }}
+      {{- if .backendRefs }}
       backendRefs:
-        - name: {{ include "app.fullname" . }}
-          port: {{ .Values.service.port }}
+        {{- toYaml .backendRefs | nindent 8 }}
+      {{- end }}
+      {{- if .filters }}
+      filters:
+        {{- toYaml .filters | nindent 8 }}
+      {{- end }}
+    {{- end }}
 {{- end }}

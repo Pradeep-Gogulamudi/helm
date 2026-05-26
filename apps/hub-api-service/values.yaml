@@ -3,36 +3,25 @@ replicaCount: 2
 image:
   repository: europe-west1-docker.pkg.dev/vdxl-mgmt-01/vdxl-mgmt-01-product-content/hub-api-service
   tag: ""
-  pullPolicy: IfNotPresent
 
-ports:
-  - containerPort: 7080
-    name: http
-  - containerPort: 6000
-    name: jmx
+container:
+  name: hub-api-service
+  port: 7080
 
 service:
   port: 80
-  targetPort: 7080
 
-env:
-  - name: TZ
-    value: "Europe/Amsterdam"
+serviceAccount:
+  name: ai-hub
 
 resources:
   requests:
     cpu: 150m
     memory: 256Mi
 
-readinessProbe:
-  httpGet:
-    path: /actuator/health
-    port: 7080
-
-livenessProbe:
-  httpGet:
-    path: /actuator/health
-    port: 7080
+env:
+  - name: TZ
+    value: "Europe/Amsterdam"
 
 podLabels:
   admission.datadoghq.com/enabled: "true"
@@ -41,13 +30,40 @@ podAnnotations:
   admission.datadoghq.com/java-lib.version: "v1"
   admission.datadoghq.com/java-lib.enabled: "true"
 
+probes:
+  readiness:
+    enabled: true
+    httpGet:
+      path: /actuator/health
+      port: 7080
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  liveness:
+    enabled: true
+    httpGet:
+      path: /actuator/health
+      port: 7080
+    initialDelaySeconds: 30
+    periodSeconds: 15
+    timeoutSeconds: 5
+    failureThreshold: 3
+
 autoscaling:
   enabled: true
   minReplicas: 1
   maxReplicas: 3
-  cpu: 75
-  memory: 75
+  targetCPUUtilizationPercentage: 75
 
-route:
+gateway:
   enabled: true
-  path: /api
+  routes:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api
+      backendRefs:
+        - name: hub-api-service
+          port: 80

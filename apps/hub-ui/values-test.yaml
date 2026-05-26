@@ -1,7 +1,230 @@
-image:
-  tag: test
+app-template:
+  image:
+    tag: test
 
-route:
-  gatewayName: product-content-gateway-test
-  gatewayNamespace: ingress-gateway
-  host: ai-hub-test.company.com
+  gateway:
+    gatewayName: product-content-gateway-test
+    gatewayNamespace: ingress-gateway
+    hostnames:
+      - ai-hub-test.company.com
+
+  externalSecret:
+    enabled: true
+    storeName: gcp-cluster-secret-store
+    refreshInterval: "5m"
+    data:
+      # MongoDB
+      - secretKey: MONGO_DB_URI
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: MONGO_DB_URI
+      - secretKey: MONGO_DB_NAME
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: MONGO_DB_NAME
+      # JWT
+      - secretKey: SECURITY_JWT_TOKEN_ISSUER
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: SECURITY_JWT_TOKEN_ISSUER
+      - secretKey: SECURITY_JWT_TOKEN_SIGNING_KEY
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: SECURITY_JWT_TOKEN_SIGNING_KEY
+      - secretKey: SECURITY_JWT_TOKEN_EXPIRATION_HOURS
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: SECURITY_JWT_TOKEN_EXPIRATION_HOURS
+      # CORS
+      - secretKey: SECURITY_CORS_ALLOWED_ORIGINS
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: SECURITY_CORS_ALLOWED_ORIGINS
+      # Azure Blob Storage
+      - secretKey: AZURE_STORAGE_TRANSLATIONS_CONNECTION_URL
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: AZURE_STORAGE_TRANSLATIONS_CONNECTION_URL
+      - secretKey: AZURE_STORAGE_TRANSLATIONS_CONTAINER_NAME
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: AZURE_STORAGE_TRANSLATIONS_CONTAINER_NAME
+      - secretKey: AZURE_STORAGE_TRANSLATIONS_URL_EXPIRATION_DAYS
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: AZURE_STORAGE_TRANSLATIONS_URL_EXPIRATION_DAYS
+      # Kafka
+      - secretKey: KAFKA_HOST
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: KAFKA_HOST
+      - secretKey: KAFKA_PORT
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: KAFKA_PORT
+      - secretKey: KAFKA_GROUP
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: KAFKA_GROUP
+      - secretKey: KAFKA_USERNAME
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: KAFKA_USERNAME
+      - secretKey: KAFKA_PASSWORD
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub-key/versions/latest
+      - secretKey: KAFKA_REDELIVERY_MAX
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: KAFKA_REDELIVERY_MAX
+      - secretKey: KAFKA_REDELIVERY_DELAY
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: KAFKA_REDELIVERY_DELAY
+      # Salsify
+      - secretKey: SALSIFY_CLIENT_LOGGING
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: SALSIFY_CLIENT_LOGGING
+      - secretKey: SALSIFY_API_TOKENS
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: SALSIFY_API_TOKENS
+      - secretKey: SALSIFY_API_LOGGING_ENABLED
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: SALSIFY_API_LOGGING_ENABLED
+      - secretKey: SALSIFY_SANDBOX_API_ORG_ID
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: SALSIFY_SANDBOX_API_ORG_ID
+      - secretKey: SALSIFY_API_ORG_ID
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: SALSIFY_API_ORG_ID
+      # OpenAI
+      - secretKey: OPEN_AI_API_TOKEN
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: OPEN_AI_API_TOKEN
+      # FluxAI
+      - secretKey: FLUX_AI_API_TOKEN
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: FLUX_AI_API_TOKEN
+      # Cloudinary
+      - secretKey: CLOUDINARY_CLOUD_NAME
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: CLOUDINARY_CLOUD_NAME
+      - secretKey: CLOUDINARY_API_KEY
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: CLOUDINARY_API_KEY
+      - secretKey: CLOUDINARY_API_SECRET
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: CLOUDINARY_API_SECRET
+      - secretKey: CLOUDINARY_ENV
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: CLOUDINARY_ENV
+      # Cloudflare
+      - secretKey: CLOUDFLARE_API_TOKEN
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: CLOUDFLARE_API_TOKEN
+      - secretKey: CLOUDFLARE_ZONE_ID
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: CLOUDFLARE_ZONE_ID
+      # Gemini / Vertex AI
+      - secretKey: GEMINI_VERTAX_AI_TOKEN
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: GEMINI_VERTAX_AI_TOKEN
+      # Google Cloud
+      - secretKey: GOOGLE_CLOUD_PROJECT
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: GOOGLE_CLOUD_PROJECT
+      - secretKey: GOOGLE_CLOUD_LOCATION
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: GOOGLE_CLOUD_LOCATION
+      - secretKey: GOOGLE_GENAI_USE_VERTEXAI
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: GOOGLE_GENAI_USE_VERTEXAI
+      - secretKey: GOOGLE_AI_VERTEX_API_LOGGING_ENABLED
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: GOOGLE_AI_VERTEX_API_LOGGING_ENABLED
+      - secretKey: GOOGLE_AI_VERTEX_API_ACCOUNT_KEY
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub-key/versions/latest
+      # Azure AD
+      - secretKey: AZURE_TENANT_ID
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: AZURE_TENANT_ID
+      - secretKey: AZURE_CLIENT_ID
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: AZURE_CLIENT_ID
+      - secretKey: AZURE_CLIENT_SECRET
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: AZURE_CLIENT_SECRET
+      - secretKey: VITE_AZURE_CLIENT_ID
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: VITE_AZURE_CLIENT_ID
+      - secretKey: VITE_AZURE_TENANT_ID
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: VITE_AZURE_TENANT_ID
+      - secretKey: VITE_AZURE_SCOPES
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: VITE_AZURE_SCOPES
+      # Redis
+      - secretKey: REDIS_HOST
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: REDIS_HOST
+      - secretKey: REDIS_PORT
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: REDIS_PORT
+      - secretKey: REDIS_PASSWORD
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: REDIS_PASSWORD
+      # Google AI Project (test)
+      - secretKey: GOOGLE_AI_PROJECT_TEST_NAME
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: GOOGLE_AI_PROJECT_TEST_NAME
+      - secretKey: GOOGLE_AI_PROJECT_TEST_LOCATION
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: GOOGLE_AI_PROJECT_TEST_LOCATION
+      - secretKey: GOOGLE_AI_PROJECT_TEST_ID
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: GOOGLE_AI_PROJECT_TEST_ID
+      - secretKey: GOOGLE_AI_PROJECT_TEST_JSON_KEY
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: GOOGLE_AI_PROJECT_TEST_JSON_KEY
+      # GCS Storage
+      - secretKey: GCS_STORAGE_BUCKET_NAME
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: GCS_STORAGE_BUCKET_NAME
+      # Google AI Project
+      - secretKey: GOOGLE_AI_PROJECT_NAME
+        remoteRef:
+          key: projects/vdxl-test-product-content-01/secrets/ai-hub/versions/latest
+          property: GOOGLE_AI_PROJECT_NAME

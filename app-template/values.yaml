@@ -1,23 +1,124 @@
-replicaCount: 1
+# Global name overrides (optional)
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount: 2
 
 image:
   repository: ""
   tag: ""
   pullPolicy: IfNotPresent
-  
+
+imagePullSecrets: []
+  # - name: artifact-registry-secret
+
+container:
+  name: app
+  port: 8080
+
 service:
   port: 80
-  targetPort: 80
+  type: ClusterIP
+  # name: ""   # defaults to fullname
 
-ports: []
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
 env: []
-resources: {}
+  # - name: TZ
+  #   value: "UTC"
+  # - name: DB_PASSWORD
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: my-secret
+  #       key: password
 
-readinessProbe: {}
-livenessProbe: {}
+podLabels: {}
+podAnnotations: {}
 
-route:
+externalSecret:
   enabled: false
+  # storeName: gcp-secret-store
+  # targetSecret: ""       # defaults to fullname
+  # refreshInterval: 10m
+  data: []
+    # - secretKey: api-key
+    #   remoteRef:
+    #     key: projects/<project>/secrets/<name>/versions/latest
+
+initContainers: []
+sidecars: []
+
+probes:
+  liveness:
+    enabled: false
+    # httpGet:
+    #   port: 8080
+    #   path: /health
+    # initialDelaySeconds: 30
+    # periodSeconds: 30
+    # timeoutSeconds: 5
+  readiness:
+    enabled: false
+    # httpGet:
+    #   port: 8080
+    #   path: /ready
+    # initialDelaySeconds: 15
+    # periodSeconds: 30
+    # timeoutSeconds: 5
+
+volumeMounts: []
+  # - name: config
+  #   mountPath: /app/config
+  #   readOnly: true
+
+volumes: []
+  # - name: config
+  #   secret:
+  #     secretName: my-secret
+
+securityContext:
+  runAsNonRoot: false
+
+serviceAccount:
+  name: ""
+
+nodeSelector:
+  node_pool: product-content-default
+
+# Kubernetes Gateway API — HTTPRoute attached to shared Gateway
+gateway:
+  enabled: false
+  # gatewayName and gatewayNamespace MUST be set per-env
+  # gatewayName: product-content-gateway-test
+  gatewayNamespace: ingress-gateway
+  routeNamespace: ""        # defaults to gatewayNamespace
+  parentSectionName: ""     # optional listener name on the gateway
+  hostnames: []
+    # - app.example.com
+  routes: []
+    # - matches:
+    #     - path:
+    #         type: PathPrefix
+    #         value: /api
+    #   backendRefs:
+    #     - name: hub-api-service
+    #       port: 80
 
 autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+cronjob:
+  enabled: false
+
+job:
   enabled: false
