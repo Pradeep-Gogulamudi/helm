@@ -1,0 +1,7 @@
+image:
+  tag: prod
+
+route:
+  gatewayName: product-content-gateway
+  gatewayNamespace: ingress-gateway
+  host: ai.company.com

@@ -1,0 +1,19 @@
+image:
+  tag: test-32950   # updated by pipeline
+
+gateway:
+  enabled: true
+  gatewayName: product-content-gateway-test
+  gatewayNamespace: ingress-gateway
+
+  hostnames:
+    - ai-hub-test.company.com
+
+  routes:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api
+      backendRefs:
+        - name: hub-api-service
+          port: 80

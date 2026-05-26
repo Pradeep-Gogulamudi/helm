@@ -1,0 +1,53 @@
+replicaCount: 2
+
+image:
+  repository: europe-west1-docker.pkg.dev/vdxl-mgmt-01/vdxl-mgmt-01-product-content/hub-api-service
+  tag: ""
+  pullPolicy: IfNotPresent
+
+ports:
+  - containerPort: 7080
+    name: http
+  - containerPort: 6000
+    name: jmx
+
+service:
+  port: 80
+  targetPort: 7080
+
+env:
+  - name: TZ
+    value: "Europe/Amsterdam"
+
+resources:
+  requests:
+    cpu: 150m
+    memory: 256Mi
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 7080
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 7080
+
+podLabels:
+  admission.datadoghq.com/enabled: "true"
+
+podAnnotations:
+  admission.datadoghq.com/java-lib.version: "v1"
+  admission.datadoghq.com/java-lib.enabled: "true"
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  cpu: 75
+  memory: 75
+
+route:
+  enabled: true
+  path: /api

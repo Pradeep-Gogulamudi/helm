@@ -1,0 +1,7 @@
+image:
+  tag: test
+
+route:
+  gatewayName: product-content-gateway-test
+  gatewayNamespace: ingress-gateway
+  host: ai-hub-test.company.com

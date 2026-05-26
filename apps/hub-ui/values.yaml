@@ -1,0 +1,41 @@
+replicaCount: 2
+
+image:
+  repository: europe-west1-docker.pkg.dev/vdxl-mgmt-01/vdxl-mgmt-01-product-content/hub-ui
+  tag: ""
+  pullPolicy: IfNotPresent
+
+ports:
+  - containerPort: 80
+
+service:
+  port: 80
+  targetPort: 80
+
+env:
+  - name: TZ
+    value: "Europe/Amsterdam"
+  - name: HUB_API
+    value: "hub-api-service:80"
+
+resources:
+  requests:
+    cpu: 150m
+    memory: 256Mi
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 80
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 80
+
+autoscaling:
+  enabled: false
+
+route:
+  enabled: true
+  path: /

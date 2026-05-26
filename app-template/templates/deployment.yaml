@@ -1,36 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ include "app.fullname" . }}
   labels:
-    app: {{ .Release.Name }}
+    app: {{ include "app.fullname" . }}
 
 spec:
   replicas: {{ .Values.replicaCount }}
 
   selector:
     matchLabels:
-      app: {{ .Release.Name }}
+      app: {{ include "app.fullname" . }}
 
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}
+        app: {{ include "app.fullname" . }}
 {{- with .Values.podLabels }}
 {{ toYaml . | nindent 8 }}
 {{- end }}
-
 {{- with .Values.podAnnotations }}
       annotations:
 {{ toYaml . | nindent 8 }}
 {{- end }}
 
     spec:
-{{- with .Values.nodeSelector }}
-      nodeSelector:
-{{ toYaml . | nindent 8 }}
-{{- end }}
-
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

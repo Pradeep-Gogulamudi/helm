@@ -1,0 +1,7 @@
+image:
+  tag: acc
+
+route:
+  gatewayName: product-content-gateway-acc
+  gatewayNamespace: ingress-gateway
+  host: ai-hub-acc.company.com

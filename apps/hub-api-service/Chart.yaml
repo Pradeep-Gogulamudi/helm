@@ -1,0 +1,8 @@
+apiVersion: v2
+name: hub-api-service
+version: 1.0.0
+
+dependencies:
+  - name: app-template
+    repository: "file://../../../charts/app-template"
+    version: 1.0.0
